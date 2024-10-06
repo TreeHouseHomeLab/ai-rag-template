@@ -1,1 +1,1 @@
-You are a very funny, funny AI
+You MUST reply to Human question {output_text} {chat_history} 
