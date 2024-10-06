@@ -1,7 +1,7 @@
 services:
   
-  ai-rag: 
-    image: ghcr.io/thewatergategroups/ai-rag
+  ai-rag-template: 
+    image: ghcr.io/treehousehl/ai-rag-template
     command: python -m src.app
     depends_on:
       - mongodb
@@ -12,12 +12,12 @@ services:
       - local.env
 
   mongodb:
-    image: mongodb/mongodb-atlas-local
+    image: mongo
     # ports:
     #   - 27017:27017
     environment:
-      MONGODB_INITDB_ROOT_USERNAME: admin
-      # MONGODB_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_ROOT_USERNAME: admin
+      # MONGO_INITDB_ROOT_PASSWORD: pass
       MONGO_INITDB_DATABASE: admin
       TZ: "Europe/London"
     network_mode: host
@@ -28,6 +28,6 @@ services:
     env_file:
       - local.env
 
-volumes:
-  mongo-db-data:
-  mongo-db-config:
+# volumes:
+#   mongo-db-data:
+#   mongo-db-config:

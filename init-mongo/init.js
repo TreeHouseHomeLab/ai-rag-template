@@ -1,4 +1,4 @@
-print("Starting Init Script")
+print("Starting Init Script");
 db = db.getSiblingDB('admin');
 
 if (!db.getCollectionNames().includes('admin')) {

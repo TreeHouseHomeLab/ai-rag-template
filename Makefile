@@ -1,10 +1,10 @@
-REPOSITORY := ai-rag
+REPOSITORY := ai-rag-template
 SHELL := /bin/bash
 
 build:
 	docker build --network=host \
 	-f ./Dockerfile \
-	-t ghcr.io/thewatergategroups/$(REPOSITORY):latest \
+	-t ghcr.io/treehousehl/$(REPOSITORY):latest \
 	. 
 
 up: 
