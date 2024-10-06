@@ -2,22 +2,18 @@ FROM python:3.12.3-slim
 
 RUN useradd -s /bin/bash python
 
-EXPOSE 3000
+EXPOSE 8000
 WORKDIR /app
 
 ADD  . /app
 
-RUN pip install --upgrade pip 
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+ENV PATH="/root/.cargo/bin/:$PATH"
+ENV UV_PROJECT_ENVIRONMENT="/usr/local/"
 
-ARG COMMIT_SHA=<not-specified>
-RUN echo "ai-rag-template: $COMMIT_SHA" >> ./commit.sha
-
-LABEL maintainer="%CUSTOM_PLUGIN_CREATOR_USERNAME%" \
-      name="ai-rag-template" \
-      description="%CUSTOM_PLUGIN_SERVICE_DESCRIPTION%" \
-      eu.mia-platform.url="https://www.mia-platform.eu" \
-      eu.mia-platform.version="0.3.1"
+RUN uv sync 
 
 USER python
 

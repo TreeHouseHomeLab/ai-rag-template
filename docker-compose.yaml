@@ -1,0 +1,32 @@
+services:
+  
+  ai-rag: 
+    image: ghcr.io/thewatergategroups/ai-rag
+    command: python -m src.app
+    depends_on:
+      - mongodb
+    volumes:
+      - ./:/app
+    ports: 
+      - 8000:8000
+    env_file:
+      - local.env
+
+  mongodb:
+    image: mongodb/mongodb-atlas-local
+    ports:
+      - 27017:27017
+    # environment:
+    #   MONGODB_INITDB_ROOT_USERNAME: root
+    #   MONGODB_INITDB_ROOT_PASSWORD: pass
+    #   MONGO_INITDB_DATABASE: root
+    volumes:
+      - mongo-db-data:/data/db
+      - mongo-db-config:/data/configdb
+      - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js:ro
+    env_file:
+      - local.env
+
+volumes:
+  mongo-db-data:
+  mongo-db-config:

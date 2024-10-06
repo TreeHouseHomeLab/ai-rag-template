@@ -22,7 +22,6 @@ class EnvVarsManager(Generic[T]):
         self.model = params.model
         self.logger = params.logger
         self.env_vars: T = os.environ
-
         self.env_vars = self.convert_to_pydantic()
 
     def convert_to_pydantic(self) -> T:

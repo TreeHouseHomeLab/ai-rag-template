@@ -74,7 +74,6 @@ class AssistantService:
         """
         vector_store_configurations = self.app_context.configurations.vectorStore
         vector_store_cluster_uri = self.app_context.env_vars.MONGODB_CLUSTER_URI
-
         db_name = \
             vector_store_configurations.dbName or \
             parse_uri(vector_store_cluster_uri).get('database')

@@ -20,7 +20,10 @@ class VectorSearchIndexUpdater:
         self._init_collection()
 
     def _init_collection(self) -> None:
+        print("collecting")
+        print(self.app_context.env_vars.MONGODB_CLUSTER_URI)
         mongo_cluster_uri = self.app_context.env_vars.MONGODB_CLUSTER_URI
+        print(mongo_cluster_uri)
         db_name = self.app_context.configurations.vectorStore.dbName
         collection_name = self.app_context.configurations.vectorStore.collectionName
 
@@ -29,7 +32,8 @@ class VectorSearchIndexUpdater:
             db = client.get_database()
             self.collection = db[collection_name]
         # pylint: disable=broad-except
-        except Exception:
+        except Exception as exc:
+            self.logger.exception("Failed to get collection from database... Attempting to get collection from client.")
             self.collection = client[db_name][collection_name]
 
     def _create_vector_index(self, new_index_definition: SearchIndexModel) -> None:
