@@ -20,10 +20,7 @@ class VectorSearchIndexUpdater:
         self._init_collection()
 
     def _init_collection(self) -> None:
-        print("collecting")
-        print(self.app_context.env_vars.MONGODB_CLUSTER_URI)
         mongo_cluster_uri = self.app_context.env_vars.MONGODB_CLUSTER_URI
-        print(mongo_cluster_uri)
         db_name = self.app_context.configurations.vectorStore.dbName
         collection_name = self.app_context.configurations.vectorStore.collectionName
 
@@ -90,7 +87,7 @@ class VectorSearchIndexUpdater:
 
 
     def update_vector_search_index(self) -> None:
-        try:
+        # try:
             current_vector_index_definition = self._get_current_vector_index_definition()
             new_vector_index_definition = self._get_updated_vector_index_definition()
 
@@ -99,7 +96,7 @@ class VectorSearchIndexUpdater:
             else:
                 self._update_vector_index(current_vector_index_definition, new_vector_index_definition)
         # pylint: disable=broad-except
-        except Exception as ex:
-            self.logger.warn(f'Unable to update Vector Search index "{self.index_name}".')
-            self.logger.warn(ex)
-            self.logger.warn("Service will continue to run, but you might experience unwanted behaviors.")
+        # except Exception as ex:
+            self.logger.warning(f'Unable to update Vector Search index "{self.index_name}".')
+            self.logger.warning(ex)
+            self.logger.warning("Service will continue to run, but you might experience unwanted behaviors.")

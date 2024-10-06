@@ -7,23 +7,24 @@ services:
       - mongodb
     volumes:
       - ./:/app
-    ports: 
-      - 8000:8000
+    network_mode: host
     env_file:
       - local.env
 
   mongodb:
     image: mongodb/mongodb-atlas-local
-    ports:
-      - 27017:27017
-    # environment:
-    #   MONGODB_INITDB_ROOT_USERNAME: root
-    #   MONGODB_INITDB_ROOT_PASSWORD: pass
-    #   MONGO_INITDB_DATABASE: root
+    # ports:
+    #   - 27017:27017
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      # MONGODB_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: admin
+      TZ: "Europe/London"
+    network_mode: host
     volumes:
-      - mongo-db-data:/data/db
-      - mongo-db-config:/data/configdb
-      - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js:ro
+      # - mongo-db-data:/data/db
+      # - mongo-db-config:/data/configdb
+      - ./init-mongo/:/docker-entrypoint-initdb.d/
     env_file:
       - local.env
 
