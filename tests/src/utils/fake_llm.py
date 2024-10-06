@@ -1,4 +1,5 @@
 """Fake LLM wrapper for testing purposes."""
+
 from typing import Any, Dict, List, Mapping, Optional, cast
 
 from langchain_core.language_models.llms import LLM
@@ -42,7 +43,7 @@ class FakeLLM(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> str:
-        self.prompts_received.append(prompt) # store received prompts for testing
+        self.prompts_received.append(prompt)  # store received prompts for testing
         if self.sequential_responses:
             return self._get_next_response_in_sequence
         if self.queries is not None:
@@ -61,13 +62,13 @@ class FakeLLM(LLM):
         response = queries[list(queries.keys())[self.response_index]]
         self.response_index = self.response_index + 1
         return response
-    
+
     @property
     def get_received_prompts(self) -> List[str]:
         return self.prompts_received
-    
+
     def get_last_received_prompt(self) -> str:
         return self.prompts_received[-1] if len(self.prompts_received) > 0 else ""
-    
+
     def clear_received_prompts(self):
         self.prompts_received = []
