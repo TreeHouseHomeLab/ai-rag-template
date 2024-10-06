@@ -1,12 +1,13 @@
 services:
-  
-  ai-rag-template: 
+
+  ai-rag-template:
     image: ghcr.io/treehousehl/ai-rag-template
     command: python -m src.app
     depends_on:
       - mongodb
     volumes:
       - ./:/app
+      - ./prompts:/prompts
     network_mode: host
     env_file:
       - local.env
