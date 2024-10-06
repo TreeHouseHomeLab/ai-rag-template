@@ -9,7 +9,7 @@ build:
 
 up: 
 	docker compose up -d --remove-orphans
-	docker compose logs -f 
+	docker compose logs ai-rag-template -f 
 
 test:
 	python -m pytest -v tests
