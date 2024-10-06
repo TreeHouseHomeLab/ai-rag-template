@@ -13,7 +13,10 @@ from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.runnables.utils import create_model
 
-from src.application.assistance.chains.assistant_prompt import AssistantPromptBuilder, AssistantPromptTemplate
+from src.application.assistance.chains.assistant_prompt import (
+    AssistantPromptBuilder,
+    AssistantPromptTemplate,
+)
 from src.application.assistance.chains.retriever_chain import RetrieverChain
 
 
@@ -48,17 +51,11 @@ class AssistantChain(Chain):
         return create_model(
             "AssistantChainInput",
             **{
-                self.query_key: (
-                    str,  # query
-                    None
-                ),
-                self.chat_history_key: (
-                    str,  # chat_history
-                    None
-                ),
+                self.query_key: (str, None),  # query
+                self.chat_history_key: (str, None),  # chat_history
                 self.prompt_custom_variables_key: (
                     Optional[Dict[str, Any]],  # custom variables
-                    {}
+                    {},
                 ),
             },  # type: ignore[call-overload]
         )
@@ -69,17 +66,11 @@ class AssistantChain(Chain):
         return create_model(
             "AssistantChainOutput",
             **{
-                self.response_key: (
-                    str,  # model response
-                    None
-                ),
-                self.references_key: (
-                    List[Document],  # used documents
-                    None
-                ),
+                self.response_key: (str, None),  # model response
+                self.references_key: (List[Document], None),  # used documents
             },  # type: ignore[call-overload]
         )
-        
+
     def _build_default_prompt(self) -> PromptTemplate:
         return AssistantPromptBuilder().build()
 
@@ -87,10 +78,7 @@ class AssistantChain(Chain):
         if not self.prompt_template:
             self.prompt_template = self._build_default_prompt()
 
-        return LLMChain(
-            llm=self.llm,
-            prompt=self.prompt_template
-        )
+        return LLMChain(llm=self.llm, prompt=self.prompt_template)
 
     def _create_chain(self, llm_chain):
         return self.retriever_chain | self.aggregate_docs_chain | llm_chain
@@ -100,41 +88,42 @@ class AssistantChain(Chain):
             input={
                 "chat_history": self._process_chat_history(chat_history),
                 "query": query,
-                **custom_prompt_variables
+                **custom_prompt_variables,
             },
-            config=None
+            config=None,
         )
 
-    def _call(self, inputs: Dict[str, Any], run_manager: CallbackManagerForChainRun | None = None) -> Dict[str, Any]:
+    def _call(
+        self,
+        inputs: Dict[str, Any],
+        run_manager: CallbackManagerForChainRun | None = None,
+    ) -> Dict[str, Any]:
         query, chat_history = inputs[self.query_key], inputs[self.chat_history_key]
         custom_prompt_variables = inputs.get(self.prompt_custom_variables_key, {})
 
         llm_chain = self._create_llm_chain()
         chain = self._create_chain(llm_chain)
-        chain_response = self._invoke_chain(chain, chat_history, query, custom_prompt_variables)
+        chain_response = self._invoke_chain(
+            chain, chat_history, query, custom_prompt_variables
+        )
 
         return chain_response
 
     def _process_chat_history(self, chat_history: List[str]) -> str:
         memory = ConversationTokenBufferMemory(
-            llm=self.llm,
-            max_token_limit=self.chat_history_max_token_limit
+            llm=self.llm, max_token_limit=self.chat_history_max_token_limit
         )
 
         for i in range(0, len(chat_history) - 1, 2):
             input_message = chat_history[i]
             output_message = chat_history[i + 1]
 
-            memory.save_context(
-                {"input": input_message},
-                {"output": output_message}
-            )
+            memory.save_context({"input": input_message}, {"output": output_message})
 
         memory_values = memory.load_memory_variables({})
 
         if len(memory_values.get("history")) > 0:
-            return \
-f"""
+            return f"""
 Referring to the previous conversation messages:
 
 {memory_values["history"]}

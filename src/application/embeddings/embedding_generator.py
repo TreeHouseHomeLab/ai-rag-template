@@ -1,6 +1,7 @@
 """
 This script crawls a website and saves the embeddings extracted from the text of each page to a text file.
 """
+
 import re
 from collections import deque
 from urllib.parse import urlparse
@@ -17,7 +18,8 @@ from src.application.embeddings.hyperlink_parser import HyperlinkParser
 # Regex pattern to match a URL
 HTTP_URL_PATTERN = r"^http[s]*://.+"
 
-class EmbeddingGenerator():
+
+class EmbeddingGenerator:
     """
     Class to generate embeddings for text data.
     """
@@ -28,7 +30,9 @@ class EmbeddingGenerator():
         embedding_api_key = app_context.env_vars.EMBEDDINGS_API_KEY
         configuration = app_context.configurations
 
-        embedding = OpenAIEmbeddings(openai_api_key=embedding_api_key, model=configuration.embeddings.name)
+        embedding = OpenAIEmbeddings(
+            openai_api_key=embedding_api_key, model=configuration.embeddings.name
+        )
 
         self._document_chunker = DocumentChunker(embedding=embedding)
 
@@ -39,9 +43,8 @@ class EmbeddingGenerator():
             index_name=configuration.vectorStore.indexName,
             embedding_key=configuration.vectorStore.embeddingKey,
             relevance_score_fn=configuration.vectorStore.relevanceScoreFn,
-            text_key=configuration.vectorStore.textKey
+            text_key=configuration.vectorStore.textKey,
         )
-
 
     def _get_hyperlinks(self, raw_text: str):
         """
@@ -53,15 +56,16 @@ class EmbeddingGenerator():
 
         return parser.hyperlinks
 
-
-    def _get_domain_hyperlinks(self, raw_text: str, local_domain: str, path: str | None = None):
+    def _get_domain_hyperlinks(
+        self, raw_text: str, local_domain: str, path: str | None = None
+    ):
         """
         Function to get the hyperlinks from a URL that are within the same domain
-        
+
         Args:
             raw_text (str): The raw HTML text to extract hyperlinks from.
             local_domain (str): The domain to compare the hyperlinks against.
-        
+
         Returns:
             list: A list of hyperlinks that are within the same domain.
         """
@@ -74,7 +78,9 @@ class EmbeddingGenerator():
                 # Parse the URL and check if the domain is the same
                 url_obj = urlparse(link)
                 # Link should be within the same domain and should start with one of the paths
-                if url_obj.netloc == local_domain and url_obj.path.startswith(path or ''):
+                if url_obj.netloc == local_domain and url_obj.path.startswith(
+                    path or ""
+                ):
                     clean_link = link
 
             # If the link is not a URL, check if it is a relative link
@@ -91,19 +97,18 @@ class EmbeddingGenerator():
                 if path:
                     # Check if the link starts with the path (if included)
                     url_obj = urlparse(clean_link)
-                    if not url_obj.path.startswith(path or ''):
+                    if not url_obj.path.startswith(path or ""):
                         continue
                 clean_links.append(clean_link)
-        
 
         return list(set(clean_links))
-    
+
     def generate(self, url: str, filter_path: str | None = None):
         """
         Crawls the given URL and saves the text content of each page to a text file.
 
         Args:
-            url (str): The URL to crawl. From this URL, the crawler will extract the text content 
+            url (str): The URL to crawl. From this URL, the crawler will extract the text content
                 of said page and any other page connected via hyperlinks (anchor tags).
             domain (str | None, optional): The domain to compare the hyperlinks against. If None,
                 the hyperlinks will not be filtered by domain. Defaults to None.
@@ -122,7 +127,9 @@ class EmbeddingGenerator():
         while queue:
             # Get the next URL from the queue
             url = queue.pop()
-            self.logger.debug(f"Scraping page: {url}")  # for debugging and to see the progress
+            self.logger.debug(
+                f"Scraping page: {url}"
+            )  # for debugging and to see the progress
 
             # Get the text from the URL using BeautifulSoup
             response = requests.get(url, timeout=5)
@@ -146,9 +153,13 @@ class EmbeddingGenerator():
                 continue
 
             chunks = self._document_chunker.split_text_into_chunks(text=text, url=url)
-            self.logger.debug(f"Extracted {len(chunks)} chunks from the page. Generated embeddings for these...")  # for debugging and to see the progress
+            self.logger.debug(
+                f"Extracted {len(chunks)} chunks from the page. Generated embeddings for these..."
+            )  # for debugging and to see the progress
             self._embedding_vector_store.add_documents(chunks)
-            self.logger.debug("Embeddings generation completed. Extracting links...")  # for debugging and to see the progress
+            self.logger.debug(
+                "Embeddings generation completed. Extracting links..."
+            )  # for debugging and to see the progress
 
             hyperlinks = self._get_domain_hyperlinks(raw_text, local_domain, path)
             if len(hyperlinks) == 0:

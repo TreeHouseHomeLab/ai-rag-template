@@ -11,13 +11,15 @@ from langchain_experimental.text_splitter import SemanticChunker
 DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 
 
-class DocumentChunker():
+class DocumentChunker:
     """
     Initialize the DocumentChunker class.
     """
 
     def __init__(self, embedding: Embeddings) -> None:
-        self._chunker = SemanticChunker(embeddings=embedding, breakpoint_threshold_type='percentile')
+        self._chunker = SemanticChunker(
+            embeddings=embedding, breakpoint_threshold_type="percentile"
+        )
 
     def _remove_consecutive_newlines(self, text: str) -> str:
         """
@@ -43,7 +45,13 @@ class DocumentChunker():
         sha = self._generate_sha(content)
 
         document = Document(page_content=content, metadata={"sha": sha, "url": url})
-        chunks = [Document(page_content=chunk) for chunk in self._chunker.split_text(document.page_content)]
+        chunks = [
+            Document(page_content=chunk)
+            for chunk in self._chunker.split_text(document.page_content)
+        ]
         # NOTE: "copy" method actually exists.
         # pylint: disable=E1101
-        return [Document(page_content=chunk.page_content, metadata=document.metadata.copy()) for chunk in chunks]
+        return [
+            Document(page_content=chunk.page_content, metadata=document.metadata.copy())
+            for chunk in chunks
+        ]

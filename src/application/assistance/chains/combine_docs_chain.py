@@ -18,22 +18,24 @@ class AggregateDocsChunksChain(BaseCombineDocumentsChain):
     tokenizer = tiktoken.encoding_for_model(tokenizer_model_name)
 
     # pylint: disable=W0236
-    def acombine_docs(self, docs: List[Document], **kwargs: Any) -> Coroutine[Any, Any, Tuple[str | dict]]:
+    def acombine_docs(
+        self, docs: List[Document], **kwargs: Any
+    ) -> Coroutine[Any, Any, Tuple[str | dict]]:
         return self.combine_docs(docs, **kwargs)
 
     def combine_docs(self, docs: List[Document], **kwargs: Any) -> Tuple[str | dict]:
-        combined_text, token_count, limit_exceeded = self._aggregate_docs_until_token_limit(
-            docs)
+        combined_text, token_count, limit_exceeded = (
+            self._aggregate_docs_until_token_limit(docs)
+        )
         if limit_exceeded:
             self.context.logger.warning(
                 f"Combined text length exceeded {self.aggreate_max_token_number} tokens"
             )
-        self.context.logger.debug(
-            f"Combined text length: {token_count} tokens")
+        self.context.logger.debug(f"Combined text length: {token_count} tokens")
         return combined_text, {}
 
     def _aggregate_docs_until_token_limit(self, docs):
-        combined_text = ''
+        combined_text = ""
         token_count = 0
         limit_exceeded = False
         for doc in docs:
@@ -44,9 +46,8 @@ class AggregateDocsChunksChain(BaseCombineDocumentsChain):
             combined_text += f"\n\n{doc.page_content}"
             token_count += len(new_tokens)
 
-        if combined_text != '':
-            combined_text = \
-f"""
+        if combined_text != "":
+            combined_text = f"""
 Based on the information provided in this documentation:{combined_text}
 
 ---

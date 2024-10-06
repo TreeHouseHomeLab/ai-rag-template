@@ -48,10 +48,7 @@ class RetrieverChain(Chain):
         return create_model(
             "RetrieveChainInput",
             **{
-                self.query_key: (
-                    str,  # query
-                    None
-                ),
+                self.query_key: (str, None),  # query
             },  # type: ignore[call-overload]
         )
 
@@ -60,31 +57,28 @@ class RetrieverChain(Chain):
     ) -> Type[BaseModel]:
         return create_model(
             "RetrieveChainOutput",
-            **{self.output_key: (
-                str,  # response
-                None
-            )},  # type: ignore[call-overload]
+            **{
+                self.output_key: (str, None)  # response
+            },  # type: ignore[call-overload]
         )
 
     def _setup_vector_search(self):
         return MongoDBAtlasVectorSearch.from_connection_string(
             connection_string=self.configuration.mongodb_cluster_uri,
-            namespace=f'{self.configuration.db_name}.{self.configuration.collection_name}',
+            namespace=f"{self.configuration.db_name}.{self.configuration.collection_name}",
             embedding=self.configuration.embeddings,
             index_name=self.configuration.index_name,
             embedding_key=self.configuration.embedding_key,
             relevance_score_fn=self.configuration.relevance_score_fn,
-            text_key=self.configuration.text_key
+            text_key=self.configuration.text_key,
         )
-        
+
     def _get_post_filter_pipeline(self):
         if self.configuration.max_score_distance is not None:
             return [
                 {
                     "$match": {
-                        "score": {
-                            "$lte": self.configuration.max_score_distance
-                        }
+                        "score": {"$lte": self.configuration.max_score_distance}
                     },
                 }
             ]
@@ -92,26 +86,24 @@ class RetrieverChain(Chain):
             return [
                 {
                     "$match": {
-                        "score": {
-                            "$gte": self.configuration.min_score_distance
-                        }
+                        "score": {"$gte": self.configuration.min_score_distance}
                     },
                 }
             ]
         return None
 
-    def _call(self, inputs: Dict[str, Any], run_manager: CallbackManagerForChainRun | None = None) -> Dict[str, Any]:
+    def _call(
+        self,
+        inputs: Dict[str, Any],
+        run_manager: CallbackManagerForChainRun | None = None,
+    ) -> Dict[str, Any]:
         query = inputs[self.query_key]
         post_filter_pipeline = self._get_post_filter_pipeline()
         vector_search = self._setup_vector_search()
         result = vector_search.similarity_search(
             query,
             k=self.configuration.max_number_of_results,
-            additional= {
-                "similarity_score": True
-            },
-            post_filter_pipeline=post_filter_pipeline
+            additional={"similarity_score": True},
+            post_filter_pipeline=post_filter_pipeline,
         )
-        return {
-            self.output_key: result
-        }
+        return {self.output_key: result}
