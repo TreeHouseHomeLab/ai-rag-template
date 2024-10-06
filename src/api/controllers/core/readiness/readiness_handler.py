@@ -10,7 +10,7 @@ router = APIRouter()
     "/-/ready",
     response_model=StatusOkResponseSchema,
     status_code=status.HTTP_200_OK,
-    tags=["RAG-template"]
+    tags=["RAG-template"],
 )
 async def readiness():
     """

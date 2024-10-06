@@ -11,7 +11,7 @@ router = APIRouter()
     "/-/metrics",
     response_class=PlainTextResponse,
     status_code=status.HTTP_200_OK,
-    tags=["RAG-template"]
+    tags=["RAG-template"],
 )
 async def metrics(request: Request):
     """
@@ -20,5 +20,5 @@ async def metrics(request: Request):
 
     app_context: AppContext = request.state.app_context
     metrics_manager = app_context.metrics_manager
-    
+
     return metrics_manager.expose_metrics()

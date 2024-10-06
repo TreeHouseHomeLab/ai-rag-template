@@ -2,7 +2,10 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 
 from src.api.schemas.status_ok_schema import StatusOkResponseSchema
 from src.application.embeddings.embedding_generator import EmbeddingGenerator
-from src.api.schemas.embeddings_schemas import GenerateEmbeddingsInputSchema, GenerateStatusOutputSchema
+from src.api.schemas.embeddings_schemas import (
+    GenerateEmbeddingsInputSchema,
+    GenerateStatusOutputSchema,
+)
 from src.context import AppContext
 
 router = APIRouter()
@@ -15,10 +18,13 @@ router = APIRouter()
 # you might want to use a more sophisticated mechanism to handle this.
 router.lock = False
 
-def generate_embeddings_from_url(app_context: AppContext, url: str, filter_path: str | None):
+
+def generate_embeddings_from_url(
+    app_context: AppContext, url: str, filter_path: str | None
+):
     """
-    Generate embeddings for a given URL. 
-    
+    Generate embeddings for a given URL.
+
     This method is intended to be called as a background task. Includes managmeent of the lock mechanism
     of this router, which is locked when the embedding generation process is running, and unlocked when it finishes.
 
@@ -39,13 +45,18 @@ def generate_embeddings_from_url(app_context: AppContext, url: str, filter_path:
     finally:
         router.lock = False
 
+
 @router.post(
     "/embeddings/generate",
     response_model=StatusOkResponseSchema,
     status_code=status.HTTP_200_OK,
-    tags=["Embeddings"]
+    tags=["Embeddings"],
 )
-def generate_embeddings(request: Request, data: GenerateEmbeddingsInputSchema, background_tasks: BackgroundTasks):
+def generate_embeddings(
+    request: Request,
+    data: GenerateEmbeddingsInputSchema,
+    background_tasks: BackgroundTasks,
+):
     """
     Generate embeddings for a given URL. It starts from a single web page and generates embeddings for the text data of that page and
     for every page connected via hyperlinks (anchor tags).
@@ -73,17 +84,23 @@ def generate_embeddings(request: Request, data: GenerateEmbeddingsInputSchema, b
     request_context.logger.info(f"Generate embeddings request received for url: {url}")
 
     if not router.lock:
-        background_tasks.add_task(generate_embeddings_from_url, request_context, url, filter_path)
+        background_tasks.add_task(
+            generate_embeddings_from_url, request_context, url, filter_path
+        )
         request_context.logger.info("Generation embeddings process started.")
         return {"statusOk": True}
-    
-    raise HTTPException(status_code=409, detail="A process to generate embeddings is already in progress.")
+
+    raise HTTPException(
+        status_code=409,
+        detail="A process to generate embeddings is already in progress.",
+    )
+
 
 @router.get(
     "/embeddings/status",
     response_model=GenerateStatusOutputSchema,
     status_code=status.HTTP_200_OK,
-    tags=["Embeddings"]
+    tags=["Embeddings"],
 )
 def embeddings_status():
     """
