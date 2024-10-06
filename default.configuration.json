@@ -35,8 +35,8 @@
     "aggregateMaxTokenNumber": 2000,
     "rag": {
       "promptsFilePath": {
-        "system": "/path/to/system-prompt.txt",
-        "user": "/path/to/user-prompt.txt"
+        "system": "/prompts/system/funny-1.txt",
+        "user": "/prompts/user/1.txt"
       }
     }
   }
