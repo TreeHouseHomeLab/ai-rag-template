@@ -13,6 +13,7 @@ __pycache__
 
 # Custom configuration files
 *.configuration.json
+!local.configuration.json
 !default.configuration.json
 !tests/**/*.configuration.json
 
