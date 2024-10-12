@@ -6,9 +6,9 @@
     "name": "text-embedding-3-small"
   },
   "vectorStore": {
-    "dbName": "admin",
-    "collectionName": "admin",
-    "indexName": "vector-index",
+    "dbName": "ai-rag",
+    "collectionName": "ai-rag",
+    "indexName": "embedding_index",
     "relevanceScoreFn": "euclidean",
     "embeddingKey": "embedding",
     "textKey": "text",

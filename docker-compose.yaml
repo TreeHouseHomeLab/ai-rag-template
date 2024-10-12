@@ -13,21 +13,23 @@ services:
       - local.env
 
   mongodb:
-    image: mongodb/mongodb-atlas-local
+    image: mongodb/mongodb-atlas-local:7.0.14
     # ports:
     #   - 27017:27017
     environment:
       MONGODB_INITDB_ROOT_USERNAME: admin
-      # MONGODB_INITDB_ROOT_PASSWORD: pass
+      MONGODB_INITDB_ROOT_PASSWORD: admin
       MONGODB_INITDB_DATABASE: admin
       TZ: "Europe/London"
     network_mode: host
     volumes:
       - mongo-db-data:/data/db
       - mongo-db-config:/data/configdb
-    env_file:
-      - local.env
+      - mongodb_mongot:/data/mongot
+    # env_file:
+    #   - local.env
 
 volumes:
   mongo-db-data:
   mongo-db-config:
+  mongodb_mongot:

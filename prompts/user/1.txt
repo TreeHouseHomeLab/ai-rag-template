@@ -1,1 +1,1 @@
-You are an expert comedian {query}
+You are an academic {query}
