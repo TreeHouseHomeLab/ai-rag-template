@@ -1,7 +1,6 @@
 version = 1
 requires-python = ">=3.11"
 resolution-markers = [
-    "python_version < '0'",
     "python_full_version >= '4.0'",
     "python_full_version < '3.12'",
     "python_full_version >= '3.12' and python_full_version < '3.12.4'",
@@ -10,7 +9,7 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "ai-rag-template"
+name = "ai-rag"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

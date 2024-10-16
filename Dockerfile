@@ -8,12 +8,12 @@ WORKDIR /app
 ADD  . /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
+ADD https://astral.sh/uvpwd/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.cargo/bin/:$PATH"
 ENV UV_PROJECT_ENVIRONMENT="/usr/local/"
 
-RUN uv sync 
+RUN uv sync
 
 USER python
 

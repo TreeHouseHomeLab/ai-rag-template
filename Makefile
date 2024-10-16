@@ -5,14 +5,14 @@ build:
 	docker build --network=host \
 	-f ./Dockerfile \
 	-t ghcr.io/treehousehl/$(REPOSITORY):latest \
-	. 
+	.
 
-up: 
+up:
 	docker compose up -d --remove-orphans
-	docker compose logs ai-rag-template -f 
+	docker compose logs ai-rag-template -f
 
 test:
-	python -m pytest -v tests
+	.venv/bin/python3.12 -m pytest -v tests
 
 snapshot:
 	python -m pytest -v --snapshot-update
@@ -20,7 +20,7 @@ snapshot:
 debug:
 	docker compose run -it $(REPOSITORY) bash
 
-down: 
+down:
 	docker compose --profile "*" down
 
 
